@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Plaid Link CLI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script>
+const options = JSON.parse('<%- JSON.stringify(options) %>');
+
+const handler = Plaid.create({
+    ...options,
+    apiVersion: 'v2',
+    clientName: 'Plaid Link CLI',
+
+    onSuccess: async (publicToken) => {
+        await fetch(
+            '/publicToken',
+            { method: 'POST', body: publicToken }
+        )
+
+        window.close()
+    },
+
+    onExit: (err, metadata) => {
+        if (err != null) {
+            console.error('Exit Error', { err, metadata })
+        } else {
+            console.log('Exit', { err, metadata });
+        }
+    },
+
+    onEvent: (eventName, metadata) => {
+        console.log('Event', { eventName, metadata });
+    }
+});
+
+handler.open();
+</script>
+</body>
+</html>
