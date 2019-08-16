@@ -1,4 +1,5 @@
 import { launchServer } from "./link-server";
+import plaid from "plaid";
 
 export type Environment = "production" | "sandbox" | "development";
 
@@ -26,6 +27,18 @@ interface LinkResult {
   itemId: string;
 }
 
+function makePlaidClient(options: LinkOptions): plaid.Client {
+  return new plaid.Client(
+    options.clientId,
+    options.secret,
+    options.publicKey,
+    plaid.environments[options.env],
+    {
+      version: "2019-05-29"
+    }
+  );
+}
+
 export async function link(options: LinkOptions): Promise<LinkResult> {
   const publicToken = await launchServer({
     countryCodes: ["US"],
@@ -34,17 +47,28 @@ export async function link(options: LinkOptions): Promise<LinkResult> {
     product: options.products
   });
 
-  // TODO: Implement
-  console.log(publicToken);
+  const client = makePlaidClient(options);
+  const response = await client.exchangePublicToken(publicToken);
 
-  throw new Error("asdf");
+  return {
+    itemId: response.item_id,
+    accessToken: response.access_token
+  };
 }
 
 interface LinkUpdateOptions extends LinkOptions {
   accessToken: string;
 }
 
-export function update(options: LinkUpdateOptions): Promise<void> {
-  // TODO: Implement
-  throw new Error("asdf");
+export async function update(options: LinkUpdateOptions): Promise<void> {
+  const client = makePlaidClient(options);
+  const response = await client.createPublicToken(options.accessToken);
+
+  await launchServer({
+    countryCodes: ["US"],
+    env: options.env,
+    key: options.publicKey,
+    product: options.products,
+    token: response.public_token
+  });
 }

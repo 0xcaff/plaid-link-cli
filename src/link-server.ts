@@ -38,7 +38,7 @@ function makeServer(
   });
 }
 
-export function launchServer(options: LinkServerOptions) {
+export function launchServer(options: LinkServerOptions): Promise<string> {
   return new Promise(resolve => {
     const server = makeServer(options, resolve);
 

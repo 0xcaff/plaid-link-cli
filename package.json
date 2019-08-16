@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
+    "@types/form-data": "^2.5.0",
     "@types/micro": "^7.3.3",
     "@types/node": "^12.7.2",
     "prettier": "^1.18.2",
@@ -20,6 +21,7 @@
   "dependencies": {
     "ejs": "^2.6.2",
     "micro": "^9.3.4",
-    "open": "^6.4.0"
+    "open": "^6.4.0",
+    "plaid": "^4.2.0"
   }
 }
