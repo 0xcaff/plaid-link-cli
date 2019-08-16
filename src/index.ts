@@ -1,4 +1,4 @@
-import { launchServer } from "./link-server";
+import { launchPlaidLink } from "./link-server";
 import plaid from "plaid";
 
 export type Environment = "production" | "sandbox" | "development";
@@ -40,7 +40,7 @@ function makePlaidClient(options: LinkOptions): plaid.Client {
 }
 
 export async function link(options: LinkOptions): Promise<LinkResult> {
-  const publicToken = await launchServer({
+  const publicToken = await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
     key: options.publicKey,
@@ -64,7 +64,7 @@ export async function update(options: LinkUpdateOptions): Promise<void> {
   const client = makePlaidClient(options);
   const response = await client.createPublicToken(options.accessToken);
 
-  await launchServer({
+  await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
     key: options.publicKey,
