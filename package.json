@@ -10,6 +10,9 @@
     "copy": "cp src/link.ejs lib/link.ejs",
     "fmt": "prettier --write src/*.ts README.md"
   },
+  "bin": {
+    "plaid-link": "./lib/cli.js"
+  },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
     "@types/form-data": "^2.5.0",
@@ -19,6 +22,7 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "commander": "^3.0.1",
     "ejs": "^2.6.2",
     "micro": "^9.3.4",
     "open": "^6.4.0",
