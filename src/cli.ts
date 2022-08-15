@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { link, update } from ".";
 import * as fs from "fs";
 import { Config } from "./config";
