@@ -49,7 +49,7 @@ export function launchPlaidLink(options: LinkServerOptions): Promise<string> {
 
     server.listen(0, "localhost", () => {
       const port = (server.address() as AddressInfo).port;
-      open(`http://localhost:${port}`);
+      console.log(`open http://localhost:${port}`);
     });
   });
 }
