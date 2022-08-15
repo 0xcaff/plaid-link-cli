@@ -3,9 +3,8 @@ import { Server } from "http";
 import { default as micro, text, send } from "micro";
 import * as ejs from "ejs";
 import { AddressInfo } from "net";
-import open from "open";
 import path from "path";
-import {Products} from "plaid";
+import { Products } from "plaid";
 
 const linkTemplatePath = path.join(__dirname, "./link.ejs");
 
@@ -41,7 +40,7 @@ function makeServer(
 
 export function launchPlaidLink(options: LinkServerOptions): Promise<string> {
   return new Promise((resolve, reject) => {
-    const server = makeServer(options, (publicToken) => {
+    const server = makeServer(options, publicToken => {
       server.close(reject);
 
       resolve(publicToken);

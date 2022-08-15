@@ -2,7 +2,7 @@ import { link, update } from ".";
 import * as fs from "fs";
 import { Config } from "./config";
 import program from "commander";
-import {Products} from "plaid";
+import { Products } from "plaid";
 
 const configFile = fs.readFileSync("./plaid.config.json");
 const configString = configFile.toString("utf-8");
