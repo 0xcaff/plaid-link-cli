@@ -3,6 +3,5 @@ import { Environment } from ".";
 export interface Config {
   clientId: string;
   env: Environment;
-  publicKey: string;
   secret: string;
 }

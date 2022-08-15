@@ -11,10 +11,8 @@ const linkTemplatePath = path.join(__dirname, "./link.ejs");
 export interface LinkServerOptions {
   env: Environment;
   product: Products[];
-  key: string;
   countryCodes: string[];
-  link_token: string;
-  token?: string;
+  token: string;
 }
 
 function makeServer(

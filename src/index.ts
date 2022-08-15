@@ -13,7 +13,6 @@ export type Environment = "production" | "sandbox" | "development";
 interface LinkOptions {
   env: Environment;
   products: Products[];
-  publicKey: string;
   clientId: string;
   secret: string;
 }
@@ -57,9 +56,8 @@ export async function link(options: LinkOptions): Promise<LinkResult> {
   const publicToken = await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
-    key: options.publicKey,
     product: options.products,
-    link_token: linkToken
+    token: linkToken
   });
 
   const response = await client.itemPublicTokenExchange({
@@ -96,8 +94,7 @@ export async function update(options: LinkUpdateOptions): Promise<void> {
   await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
-    key: options.publicKey,
     product: options.products,
-    link_token: response.data.link_token
+    token: response.data.link_token
   });
 }

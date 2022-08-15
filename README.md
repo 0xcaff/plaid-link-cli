@@ -11,7 +11,6 @@ Create a `plaid.config.json` file with the following information:
 {
   "clientId": "...",
   "env": "development",
-  "publicKey": "...",
   "secret": "..."
 }
 ```
