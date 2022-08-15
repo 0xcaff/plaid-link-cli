@@ -4,7 +4,6 @@ import { default as micro, text, send } from "micro";
 import * as ejs from "ejs";
 import { AddressInfo } from "net";
 import open from "open";
-import { fileURLToPath } from "url";
 import path from "path";
 
 const linkTemplatePath = path.join(__dirname, "./link.ejs");
@@ -35,12 +34,16 @@ function makeServer(
     } else {
       await send(resp, 404);
     }
-  });
+  }) as any;
 }
 
 export function launchPlaidLink(options: LinkServerOptions): Promise<string> {
-  return new Promise(resolve => {
-    const server = makeServer(options, resolve);
+  return new Promise((resolve, reject) => {
+    const server = makeServer(options, (publicToken) => {
+      server.close(reject);
+
+      resolve(publicToken);
+    });
 
     server.listen(0, "localhost", () => {
       const port = (server.address() as AddressInfo).port;
