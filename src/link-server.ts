@@ -1,18 +1,20 @@
-import { Environment, Product } from ".";
+import { Environment } from ".";
 import { Server } from "http";
 import { default as micro, text, send } from "micro";
 import * as ejs from "ejs";
 import { AddressInfo } from "net";
 import open from "open";
 import path from "path";
+import {Products} from "plaid";
 
 const linkTemplatePath = path.join(__dirname, "./link.ejs");
 
 export interface LinkServerOptions {
   env: Environment;
-  product: Product[];
+  product: Products[];
   key: string;
   countryCodes: string[];
+  link_token: string;
   token?: string;
 }
 

@@ -1,22 +1,12 @@
-import { launchPlaidLink } from "./link-server";
-import plaid from "plaid";
+import {launchPlaidLink} from "./link-server";
+import {Configuration, CountryCode, PlaidApi, PlaidEnvironments, Products} from "plaid";
+import { v4 as uuid} from 'uuid';
 
 export type Environment = "production" | "sandbox" | "development";
 
-export type Product =
-  | "transactions"
-  | "auth"
-  | "balance"
-  | "identity"
-  | "investments"
-  | "assets"
-  | "liabilities"
-  | "income"
-  | string;
-
 interface LinkOptions {
   env: Environment;
-  products: Product[];
+  products: Products[];
   publicKey: string;
   clientId: string;
   secret: string;
@@ -27,32 +17,52 @@ interface LinkResult {
   itemId: string;
 }
 
-function makePlaidClient(options: LinkOptions): plaid.Client {
-  return new plaid.Client(
-    options.clientId,
-    options.secret,
-    options.publicKey,
-    plaid.environments[options.env],
-    {
-      version: "2019-05-29"
+function makePlaidClient(options: LinkOptions): PlaidApi {
+  const configuration = new Configuration({
+    basePath: PlaidEnvironments[options.env],
+    baseOptions: {
+      headers: {
+        'PLAID-CLIENT-ID': options.clientId,
+        'PLAID-SECRET': options.secret,
+      }
     }
-  );
+  })
+
+  return new PlaidApi(configuration);
 }
 
 export async function link(options: LinkOptions): Promise<LinkResult> {
+  const userId = uuid();
+  console.log({ userId });
+
+  const client = makePlaidClient(options);
+  const tokenCreateResponse = await client.linkTokenCreate({
+    client_name: 'Plaid Link CLI',
+    language: 'en',
+    country_codes: [CountryCode.Us],
+    user: {
+      client_user_id: userId,
+    },
+    products: options.products as any,
+  });
+
+  const linkToken = tokenCreateResponse.data.link_token;
+
   const publicToken = await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
     key: options.publicKey,
-    product: options.products
+    product: options.products,
+    link_token: linkToken,
   });
 
-  const client = makePlaidClient(options);
-  const response = await client.exchangePublicToken(publicToken);
+  const response = await client.itemPublicTokenExchange({
+    public_token: publicToken,
+  });
 
   return {
-    itemId: response.item_id,
-    accessToken: response.access_token
+    itemId: response.data.item_id,
+    accessToken: response.data.access_token
   };
 }
 
@@ -61,14 +71,27 @@ interface LinkUpdateOptions extends LinkOptions {
 }
 
 export async function update(options: LinkUpdateOptions): Promise<void> {
+  const userId = uuid();
+  console.log({ userId });
+
   const client = makePlaidClient(options);
-  const response = await client.createPublicToken(options.accessToken);
+  const response = await client.linkTokenCreate({
+    access_token: options.accessToken,
+
+    client_name: 'Plaid Link CLI',
+    language: 'en',
+    country_codes: [CountryCode.Us],
+    user: {
+      client_user_id: userId,
+    },
+    products: options.products,
+  });
 
   await launchPlaidLink({
     countryCodes: ["US"],
     env: options.env,
     key: options.publicKey,
     product: options.products,
-    token: response.public_token
+    link_token: response.data.link_token,
   });
 }

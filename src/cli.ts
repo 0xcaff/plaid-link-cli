@@ -2,6 +2,7 @@ import { link, update } from ".";
 import * as fs from "fs";
 import { Config } from "./config";
 import program from "commander";
+import {Products} from "plaid";
 
 const configFile = fs.readFileSync("./plaid.config.json");
 const configString = configFile.toString("utf-8");
@@ -17,7 +18,7 @@ program
     ["transactions"]
   )
   .action(async args => {
-    const products = args.products as string[];
+    const products = args.products as Products[];
 
     const result = await link({ ...config, products });
     console.log(result);
@@ -33,7 +34,7 @@ program
     ["transactions"]
   )
   .action(async (accessToken, args) => {
-    const products = args.products as string[];
+    const products = args.products as Products[];
 
     const result = await update({ ...config, accessToken, products });
     console.log(result);
